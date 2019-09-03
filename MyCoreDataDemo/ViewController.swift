@@ -128,7 +128,28 @@ class ViewController: UITableViewController {
             print(error.localizedDescription)
         }
     }
+    
+    //удаление из core data
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        
+        let managedContext = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        
+        if editingStyle == .delete {
+            
+            managedContext.delete(tasks[indexPath.row])
+            
+            (UIApplication.shared.delegate as! AppDelegate).saveContext()
+            
+            do {
+                tasks = try managedContext.fetch(Task.fetchRequest())
+            } catch let error {
+                print(error.localizedDescription)
+            }
+            tableView.reloadData()
+        }
+    }
 }
+
 
 
 // MARK: - UITableViewDataSource
@@ -147,26 +168,6 @@ extension ViewController {
         return cell
     }
     
-    //удаление из core data
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        
-       let managedContext = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-        
-        
-        if editingStyle == .delete {
-            
-            managedContext.delete(tasks[indexPath.row])
-            
-            (UIApplication.shared.delegate as! AppDelegate).saveContext()
-            
-            do {
-                tasks = try managedContext.fetch(Task.fetchRequest())
-            } catch let error {
-                print(error.localizedDescription)
-            }
-            tableView.reloadData()
-        }
-    }
 }
 
 
